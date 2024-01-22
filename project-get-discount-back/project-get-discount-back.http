@@ -1,0 +1,6 @@
+@project_get_discount_back_HostAddress = http://localhost:5264
+
+GET {{project_get_discount_back_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
