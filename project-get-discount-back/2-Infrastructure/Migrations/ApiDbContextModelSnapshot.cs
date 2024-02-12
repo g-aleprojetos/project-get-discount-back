@@ -10,7 +10,7 @@ using project_get_discount_back.Context;
 
 namespace project_get_discount_back.Migrations
 {
-    [DbContext(typeof(ApiDbContext))]
+    [DbContext(typeof(DataContext))]
     partial class ApiDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

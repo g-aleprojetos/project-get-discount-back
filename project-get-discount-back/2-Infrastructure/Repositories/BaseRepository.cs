@@ -5,9 +5,9 @@ using project_get_discount_back.Interfaces;
 
 namespace project_get_discount_back.Repositories
 {
-    public class BaseRepository<T>(ApiDbContext context) : IBaseRepository<T> where T : BaseEntity
+    public class BaseRepository<T>(DataContext context) : IBaseRepository<T> where T : BaseEntity
     {
-        protected readonly ApiDbContext Context = context;
+        protected readonly DataContext Context = context;
 
         public void Create(T entity)
         {

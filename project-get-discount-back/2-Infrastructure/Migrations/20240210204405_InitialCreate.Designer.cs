@@ -11,7 +11,7 @@ using project_get_discount_back.Context;
 
 namespace project_get_discount_back.Migrations
 {
-    [DbContext(typeof(ApiDbContext))]
+    [DbContext(typeof(DataContext))]
     [Migration("20240210204405_InitialCreate")]
     partial class InitialCreate
     {

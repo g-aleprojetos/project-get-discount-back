@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using project_get_discount_back.Context;
+using project_get_discount_back.Helpers;
 using project_get_discount_back.Interfaces;
 using project_get_discount_back.Repositories;
 using System.Reflection;
@@ -33,9 +34,10 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 // Add DbContext
-builder.Services.AddDbContext<ApiDbContext>(options =>
+builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("WebApiDatabase")));
 
+builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();

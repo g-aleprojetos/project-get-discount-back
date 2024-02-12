@@ -3,11 +3,11 @@ using project_get_discount_back.Entities;
 
 namespace project_get_discount_back.Context
 {
-    public class ApiDbContext : DbContext
+    public class DataContext : DbContext
     {
         private readonly IConfiguration _configuration;
 
-        public ApiDbContext(IConfiguration configuration, DbContextOptions<ApiDbContext> options) : base(options)
+        public DataContext(IConfiguration configuration, DbContextOptions<DataContext> options) : base(options)
         {
             _configuration = configuration;
         }
