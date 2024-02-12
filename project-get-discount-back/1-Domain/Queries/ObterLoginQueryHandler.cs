@@ -11,10 +11,12 @@ namespace project_get_discount_back.Queries
     public class ObterLoginQueryHandler : IRequestHandler<ObterLoginQuery, Result<LoginViewModel>>
     {
         private readonly IUserRepository _userRepository;
+        private readonly TokenService _tokenService;
 
-        public ObterLoginQueryHandler(IUserRepository userRepository)
+        public ObterLoginQueryHandler(IUserRepository userRepository, TokenService tokenService)
         {
             _userRepository = userRepository;
+            _tokenService = tokenService;
         }
         public async Task<Result<LoginViewModel>> Handle(ObterLoginQuery request, CancellationToken cancellationToken)
         {
@@ -39,7 +41,7 @@ namespace project_get_discount_back.Queries
             var encryptedPassword = new Cryptography();
             if (user.Password == encryptedPassword.Encrypt(request.password))
             {
-                var token = TokenService.GenerateToken(user);
+                var token = _tokenService.GenerateToken(user);
                 var loginViewModel = new LoginViewModel
                 {
                     Auth = true,

@@ -3,9 +3,9 @@ using project_get_discount_back.Interfaces;
 
 namespace project_get_discount_back.Repositories
 {
-    public class UnitOfWork(ApiDbContext context) : IUnitOfWork
+    public class UnitOfWork(DataContext context) : IUnitOfWork
     {
-        private readonly ApiDbContext _context = context;
+        private readonly DataContext _context = context;
 
         public async Task Commit(CancellationToken cancellationToken)
         {

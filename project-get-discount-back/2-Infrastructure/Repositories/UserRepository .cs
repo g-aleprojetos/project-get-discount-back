@@ -5,7 +5,7 @@ using project_get_discount_back.Interfaces;
 
 namespace project_get_discount_back.Repositories
 {
-    public class UserRepository(ApiDbContext context) : BaseRepository<User>(context), IUserRepository
+    public class UserRepository(DataContext context) : BaseRepository<User>(context), IUserRepository
     {
         public async Task<User?> GetByEmail(string email, CancellationToken cancellationToken)
         {
