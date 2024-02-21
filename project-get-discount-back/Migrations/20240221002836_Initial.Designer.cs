@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using project_get_discount_back.Context;
@@ -11,9 +12,11 @@ using project_get_discount_back.Context;
 namespace project_get_discount_back.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240221002836_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,10 +32,9 @@ namespace project_get_discount_back.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("DateCreated")
+                    b.Property<DateTimeOffset?>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTimeOffset?>("DateDeleted")
@@ -53,11 +55,13 @@ namespace project_get_discount_back.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

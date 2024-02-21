@@ -1,44 +1,16 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using project_get_discount_back.Context;
-using project_get_discount_back.Helpers;
-using project_get_discount_back.Interfaces;
-using project_get_discount_back.Repositories;
-using System.Reflection;
+using project_get_discount_back._1_Domain.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Project Get Discount Back",
-        Version = "v1",
-        Contact = new OpenApiContact
-        {
-            Name = "Alexandre",
-            Email = "g.aleprojetos@gmail.com"
-        }
-    });
-
-    // Adicione o caminho do arquivo XML de documentação aqui
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    c.IncludeXmlComments(xmlPath);
-});
-
-// Add MediatR
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-
-// Add DbContext
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("WebApiDatabase")));
-
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.ConfigDatabase(builder.Configuration);
+builder.Services.ConfigMediatR();
+builder.Services.ConfigEndPonts();
+builder.Services.ConfigControlles();
+builder.Services.ConfigSwagger();
+builder.Services.ConfigServices();
+builder.Services.ConfigAuthentication(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

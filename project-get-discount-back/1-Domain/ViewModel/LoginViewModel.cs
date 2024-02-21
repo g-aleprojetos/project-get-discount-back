@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace project_get_discount_back.ViewModel
+﻿namespace project_get_discount_back.ViewModel
 {
     public class LoginViewModel
     {
