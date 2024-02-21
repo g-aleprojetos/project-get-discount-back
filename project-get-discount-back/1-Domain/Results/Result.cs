@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace project_get_discount_back.Result
+namespace project_get_discount_back.Results
 {
 
     [ExcludeFromCodeCoverage]
@@ -18,6 +18,11 @@ namespace project_get_discount_back.Result
     }
 
     public class Success : Result
+    {
+    }
+
+    [ExcludeFromCodeCoverage]
+    public class NoContent : Result
     {
     }
 

@@ -2,8 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using project_get_discount_back.Queries;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace project_get_discount_back.V1.Controllers
 {
@@ -34,9 +32,9 @@ namespace project_get_discount_back.V1.Controllers
         /// <param name="cancellationToken">O token de cancelamento de operação assíncrona.</param>
         /// <returns>O resultado da operação de login.</returns>
         [HttpPost("/Login")]
-        public async Task<ActionResult> Post(string email, string password, CancellationToken cancellationToken)
+        public async Task<ActionResult> Post(string email, string password,  CancellationToken cancellationToken)
         {
-            var query = new ObterLoginQuery(email, password);
+            var query = new GetLoginQuery(email, password);
             var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }

@@ -1,24 +1,24 @@
 ﻿using MediatR;
 using project_get_discount_back.Interfaces;
-using project_get_discount_back.Result;
+using project_get_discount_back.Results;
 using project_get_discount_back.ViewModel;
 using project_get_discount_back.Helpers;
 
 namespace project_get_discount_back.Queries
 {
-    public record ObterLoginQuery(string email, string password) : IRequest<Result<LoginViewModel>>;
+    public record GetLoginQuery(string email, string password) : IRequest<Result<LoginViewModel>>;
 
-    public class ObterLoginQueryHandler : IRequestHandler<ObterLoginQuery, Result<LoginViewModel>>
+    public class GetLoginQueryHandler : IRequestHandler<GetLoginQuery, Result<LoginViewModel>>
     {
         private readonly IUserRepository _userRepository;
         private readonly TokenService _tokenService;
 
-        public ObterLoginQueryHandler(IUserRepository userRepository, TokenService tokenService)
+        public GetLoginQueryHandler(IUserRepository userRepository, TokenService tokenService)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
         }
-        public async Task<Result<LoginViewModel>> Handle(ObterLoginQuery request, CancellationToken cancellationToken)
+        public async Task<Result<LoginViewModel>> Handle(GetLoginQuery request, CancellationToken cancellationToken)
         {
             var validationResult = ValidateRequest(request);
             if (validationResult != null)
@@ -30,12 +30,12 @@ namespace project_get_discount_back.Queries
 
             if (user == null)
             {
-                return new Fail<LoginViewModel>(ResultError.EmailNaoExiste);
+                return new Fail<LoginViewModel>(ResultError.NonExistentEmail);
             }
 
             if (user.Deleted)
             {
-                return new Fail<LoginViewModel>(ResultError.EmailDeletado);
+                return new Fail<LoginViewModel>(ResultError.EmailDeleted);
             }
 
             var encryptedPassword = new Cryptography();
@@ -52,21 +52,21 @@ namespace project_get_discount_back.Queries
 
             else
             {
-                return new Fail<LoginViewModel>(ResultError.EmailOuPasswordErrado);
+                return new Fail<LoginViewModel>(ResultError.WrongEmailOrPassword);
             }
 
         }
 
-        private static Fail<LoginViewModel>? ValidateRequest(ObterLoginQuery request)
+        private static Fail<LoginViewModel>? ValidateRequest(GetLoginQuery request)
         {
             if (string.IsNullOrEmpty(request.email))
             {
-                return new Fail<LoginViewModel>(ResultError.EmailVazio);
+                return new Fail<LoginViewModel>(ResultError.LoginEmailEmpty);
             }
 
             if (string.IsNullOrEmpty(request.password))
             {
-                return new Fail<LoginViewModel>(ResultError.PasswordVazio);
+                return new Fail<LoginViewModel>(ResultError.LoginPasswordEmpty);
             }
 
             return null;
