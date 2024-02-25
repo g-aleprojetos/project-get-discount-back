@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using project_get_discount_back._1_Domain.Helpers;
 using project_get_discount_back._1_Domain.Interfaces;
 using project_get_discount_back._1_Domain.Service.Usuario;
 using project_get_discount_back.Context;
@@ -57,7 +58,8 @@ namespace project_get_discount_back._1_Domain.Config
             services.AddScoped<TokenService>()
                     .AddScoped<IUserRepository, UserRepository>()
                     .AddScoped<IUserService, UserService>()
-                    .AddScoped<IUnitOfWork, UnitOfWork>();
+                    .AddScoped<IUnitOfWork, UnitOfWork>()
+                    .AddScoped<IEmail,Email>();
 
         public static IServiceCollection ConfigAuthentication(this IServiceCollection services, IConfiguration configuration)
         {

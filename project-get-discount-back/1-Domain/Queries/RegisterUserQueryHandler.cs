@@ -3,6 +3,7 @@ using project_get_discount_back._1_Domain.Interfaces;
 using project_get_discount_back.Entities;
 using project_get_discount_back.Interfaces;
 using project_get_discount_back.Results;
+using System.Data;
 using static project_get_discount_back.Entities.User;
 
 namespace project_get_discount_back.Queries
@@ -14,12 +15,14 @@ namespace project_get_discount_back.Queries
         private readonly IUserRepository _userRepository;
         private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmail _email;
 
-        public RegisterUserQueryHandler(IUserRepository userRepository, IUserService userService, IUnitOfWork unitOfWork)
+        public RegisterUserQueryHandler(IUserRepository userRepository, IUserService userService, IUnitOfWork unitOfWork, IEmail email)
         {
             _userRepository = userRepository;
             _userService = userService;
             _unitOfWork = unitOfWork;
+            _email = email;
         }
         public async Task<Result> Handle(RegisterUserQuery request, CancellationToken cancellationToken)
         {
@@ -30,18 +33,27 @@ namespace project_get_discount_back.Queries
             }
 
             var user = await _userRepository.GetByEmail(request.email, cancellationToken);
-            var userCreate = _userService.ObterUsername();
-
+            //var userCreate = _userService.ObterUsername();
+            var userCreate = "Alexandre dos Santos Gonçalves";
             if (user == null)
             {
-
                 AccessType role = (AccessType)Enum.Parse(typeof(AccessType), request.role);
-
                 var newUser = new User(request.name, request.email, role, userCreate);
-                _userRepository.Create(newUser);
-                await _unitOfWork.Commit(cancellationToken);
-                return new Success();
+                var res = _email.SendEmail(newUser,"Teste de envio", "Teste do corpo do email");
 
+                if (res)
+                {
+                    
+
+                    
+                    //_userRepository.Create(newUser);
+                    //await _unitOfWork.Commit(cancellationToken);
+                    return new Success();
+                }
+                else
+                {
+                    return new Fail(ResultError.ErrorWhenSendingEmail);
+                }
             }
             else
             {

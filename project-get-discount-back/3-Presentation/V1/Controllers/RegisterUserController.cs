@@ -27,7 +27,7 @@ namespace project_get_discount_back._3_Presentation.V1.Controllers
         }
 
         /// <summary>
-        /// Obtém o login do usuário.
+        /// Cadastra usuário.
         /// </summary>
         /// <param name="name">O nome do usuário</param>
         /// <param name="email">O email do usuário.</param>
