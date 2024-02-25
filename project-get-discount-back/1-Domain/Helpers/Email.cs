@@ -59,7 +59,7 @@ namespace project_get_discount_back._1_Domain.Helpers
 
         private static string PageEmail(User user)
         {
-            string imageUrl = "https://raw.githubusercontent.com/g-aleprojetos/project-get-discount-back/feature/configura-email/project-get-discount-back/1-Domain/Assets/logo.png";
+            string imageUrl = "https://raw.githubusercontent.com/g-aleprojetos/project-get-discount-back/main/project-get-discount-back/1-Domain/Assets/logo.png";
             string Response = "<div style=\"font-family:Arial, sans-serif;width:100%;background-color:#f4f4f4;text-align:center;margin:10px;\">";
             Response += "<header style=\"background-color:#333;padding:10px 0;width:100%;\">";
             Response += $"<img src=\"{imageUrl}\" alt=\"Icone da empresa\" width=\"100\" height=\"100\" />";
