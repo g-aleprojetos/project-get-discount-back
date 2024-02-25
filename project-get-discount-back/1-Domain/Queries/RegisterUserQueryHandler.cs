@@ -39,15 +39,12 @@ namespace project_get_discount_back.Queries
             {
                 AccessType role = (AccessType)Enum.Parse(typeof(AccessType), request.role);
                 var newUser = new User(request.name, request.email, role, userCreate);
-                var res = _email.SendEmail(newUser,"Teste de envio", "Teste do corpo do email");
+                var res = await _email.SendEmailAsync(newUser, "Cadastro de senha", "Tipo do Email");
 
                 if (res)
                 {
-                    
-
-                    
-                    //_userRepository.Create(newUser);
-                    //await _unitOfWork.Commit(cancellationToken);
+                    _userRepository.Create(newUser);
+                    await _unitOfWork.Commit(cancellationToken);
                     return new Success();
                 }
                 else

@@ -7,16 +7,11 @@ using project_get_discount_back.Entities;
 
 namespace project_get_discount_back._1_Domain.Helpers
 {
-    public class Email : IEmail
+    public class Email(IConfiguration configuration) : IEmail
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration = configuration;
 
-        public Email(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        bool IEmail.SendEmail(User user, string subject, string messageBody)
+        async Task<bool> IEmail.SendEmailAsync(User user, string subject, string messageBody)
         {
             try
             {
@@ -32,17 +27,19 @@ namespace project_get_discount_back._1_Domain.Helpers
                 }
 
                 var message = new MimeMessage();
+                message.Priority = MessagePriority.Urgent;
                 message.From.Add(new MailboxAddress(nameSistema, userName));
                 message.To.Add(new MailboxAddress("", user.Email));
                 message.Subject = subject;
                 message.Body = new TextPart(TextFormat.Html) { Text = PageEmail(user) };
 
+
                 using (var client = new SmtpClient())
                 {
-                    client.Connect(host, port, SecureSocketOptions.StartTls);
-                    client.Authenticate(userName, password);
-                    client.Send(message);
-                    client.Disconnect(true);
+                    await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync(userName, password);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
                     return true;
                 }
             }
@@ -50,10 +47,9 @@ namespace project_get_discount_back._1_Domain.Helpers
             {
                 return false;
             }
-
         }
 
-        public static string getFirstName(string fullName)
+        public static string GetFirstName(string fullName)
         {
             string[] NameParts = fullName.Split(' ');
             string firstName = NameParts[0];
@@ -63,13 +59,13 @@ namespace project_get_discount_back._1_Domain.Helpers
 
         private static string PageEmail(User user)
         {
-            string imageUrl = "https://raw.githubusercontent.com/g-aleprojetos/project-get-discount-front-web-admin/main/src/assets/icon/logo.svg";
+            string imageUrl = "https://raw.githubusercontent.com/g-aleprojetos/project-get-discount-back/feature/configura-email/project-get-discount-back/1-Domain/Assets/logo.png";
             string Response = "<div style=\"font-family:Arial, sans-serif;width:100%;background-color:#f4f4f4;text-align:center;margin:10px;\">";
-            Response += "<header style=\"background-color:#333;padding:10px 0;width:100%;heigth:20px;\">";
-            Response += $"<img src=\"{imageUrl}\" alt=\"Icone da empresa\" />";
+            Response += "<header style=\"background-color:#333;padding:10px 0;width:100%;\">";
+            Response += $"<img src=\"{imageUrl}\" alt=\"Icone da empresa\" width=\"100\" height=\"100\" />";
             Response += " </header>";
             Response += "<h1>Cadastro de Usuário</h1>";
-            Response += $"<h2>Olá {getFirstName(user.Name)},</h2>";
+            Response += $"<h2>Olá {GetFirstName(user.Name)},</h2>";
             Response += "<h3>Seu cadastro como usuário no nosso sistema foi realizado com sucesso! Abaixo estão os detalhes do seu cadastro:</h3>";
             Response += "<table width=\"100%\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
             Response += "<tr>";
@@ -90,7 +86,6 @@ namespace project_get_discount_back._1_Domain.Helpers
             Response += "<p>by g.aleprojetos</p>";
             Response += "</footer>";
             Response += "</body>";
-
             return Response;
         }
     }
