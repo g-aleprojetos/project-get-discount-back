@@ -1,11 +1,16 @@
+using project_get_discount_back._1_Domain.Config;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigDatabase(builder.Configuration);
+builder.Services.ConfigMediatR();
+builder.Services.ConfigEndPonts();
+builder.Services.ConfigControlles();
+builder.Services.ConfigSwagger();
+builder.Services.ConfigServices();
+builder.Services.ConfigAuthentication(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
