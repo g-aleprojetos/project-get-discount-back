@@ -26,5 +26,7 @@ namespace project_get_discount_back.Results
         public static ResultError RegisterRoleInvalido => new("Tipo de acesso Invalido.", "R003");
         public static ResultError AlreadyRegisteredUser => new("Usuário já cadastrado.", "R004");
 
+        public static ResultError ErrorWhenSendingEmail => new ("Erro ao enviar o email.", "R005");
+
     }
 }
