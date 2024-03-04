@@ -1,9 +1,13 @@
-﻿using MailKit.Net.Smtp;
+﻿using MailKit;
+using MailKit.Net.Imap;
+using MailKit.Net.Smtp;
+using MailKit.Search;
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
 using project_get_discount_back._1_Domain.Interfaces;
 using project_get_discount_back.Entities;
+using System.Text.RegularExpressions;
 
 namespace project_get_discount_back._1_Domain.Helpers
 {
@@ -16,31 +20,58 @@ namespace project_get_discount_back._1_Domain.Helpers
             try
             {
                 string host = _configuration.GetValue<string>("SMTP:Host") ?? "";
+                string hostIn = _configuration.GetValue<string>("SMTP:HostIn") ?? "";
                 string nameSistema = _configuration.GetValue<string>("SMTP:Name") ?? "";
                 string userName = _configuration.GetValue<string>("SMTP:UserName") ?? "";
                 string password = _configuration.GetValue<string>("SMTP:Password") ?? "";
                 int port = _configuration.GetValue<int>("SMTP:Port");
 
-                if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(nameSistema) || string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(hostIn) || string.IsNullOrEmpty(nameSistema) || string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
                 {
                     return false;
                 }
 
-                var message = new MimeMessage();
-                message.Priority = MessagePriority.Urgent;
-                message.From.Add(new MailboxAddress(nameSistema, userName));
-                message.To.Add(new MailboxAddress("", user.Email));
-                message.Subject = subject;
-                message.Body = new TextPart(TextFormat.Html) { Text = PageEmail(user) };
+                var email = new MimeMessage();
+                email.Priority = MessagePriority.Urgent;
+                email.From.Add(new MailboxAddress(nameSistema, userName));
+                email.To.Add(new MailboxAddress("", user.Email));
+                email.Subject = subject;
+                email.Body = new TextPart(TextFormat.Html) { Text = PageEmail(user) };
 
 
                 using (var client = new SmtpClient())
                 {
                     await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
                     await client.AuthenticateAsync(userName, password);
-                    await client.SendAsync(message);
+                    await client.SendAsync(email);
                     await client.DisconnectAsync(true);
-                    return true;
+                }
+
+                using (var client = new ImapClient())
+                {
+                    using (var cancel = new CancellationTokenSource())
+                    {
+                        client.Connect(hostIn, 993, true, cancel.Token);
+                        client.Authenticate(userName, password, cancel.Token);
+                        var folderName = "notificacao email";
+                        var inbox = client.GetFolder(folderName);
+                        inbox.Open(FolderAccess.ReadWrite, cancel.Token);
+
+                        var unreadQuery = SearchQuery.NotSeen;
+
+                        foreach (var uid in inbox.Search(unreadQuery, cancel.Token))
+                        {
+                            var message = inbox.GetMessage(uid, cancel.Token);
+                            inbox.AddFlags(uid, MessageFlags.Seen, true, cancel.Token);
+                            if (CheckEmail(message.TextBody, user.Email))
+                            {
+                                client.Disconnect(true, cancel.Token);
+                                return false;
+                            }
+                        }
+                        client.Disconnect(true, cancel.Token);
+                        return true;
+                    }
                 }
             }
             catch
@@ -48,6 +79,20 @@ namespace project_get_discount_back._1_Domain.Helpers
                 return false;
             }
         }
+
+        public static bool CheckEmail(string textBody, string email)
+        {
+            var emailPattern = @"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}";
+            var regex = new Regex(emailPattern);
+            var match = regex.Match(textBody);
+
+            if (match.Success && match.Value == email)
+            {
+                return true;
+            }
+            return false;
+        }
+
 
         public static string GetFirstName(string fullName)
         {

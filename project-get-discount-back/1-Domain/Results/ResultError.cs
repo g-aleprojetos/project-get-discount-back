@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace project_get_discount_back.Results
 {
@@ -21,6 +22,7 @@ namespace project_get_discount_back.Results
         public static ResultError NonExistentEmail => new("Email não existe.", "U003");
         public static ResultError EmailDeleted => new("Email não existe.", "U004");
         public static ResultError WrongEmailOrPassword => new("Email ou Senha errado.", "U005");
+        public static ResultError DoesNotContainPassword => new("Email ou Senha errado.", "U006");
         public static ResultError RegisterNameEmpty => new("Nome obrigatório.", "R001");
         public static ResultError RegisterEmailEmpty => new("Email obrigatório.", "R002");
         public static ResultError RegisterRoleInvalido => new("Tipo de acesso Invalido.", "R003");
