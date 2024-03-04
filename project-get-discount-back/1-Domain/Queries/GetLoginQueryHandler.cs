@@ -38,8 +38,13 @@ namespace project_get_discount_back.Queries
                 return new Fail<LoginViewModel>(ResultError.EmailDeleted);
             }
 
+            if (user.Password == null)
+            {
+                return new Fail<LoginViewModel>(ResultError.DoesNotContainPassword);
+            }
+
             var encryptedPassword = new Cryptography();
-            if (user.Password == encryptedPassword.Encrypt(request.password))
+            if (user.Password.PasswordHash == encryptedPassword.Encrypt(request.password))
             {
                 var token = _tokenService.GenerateToken(user);
                 var loginViewModel = new LoginViewModel

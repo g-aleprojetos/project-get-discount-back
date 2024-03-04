@@ -11,7 +11,6 @@ namespace project_get_discount_back.Repositories
 
         public void Create(T entity)
         {
-            entity.DateCreated = DateTimeOffset.UtcNow;
             Context.Add(entity);
         }
 
@@ -27,19 +26,19 @@ namespace project_get_discount_back.Repositories
 
         public void Delete(T entity)
         {
-            entity.DateDeleted = DateTimeOffset.UtcNow;
+            entity.DeletedAt = new DateTimeOffset(DateTime.UtcNow);
             Context.Remove(entity);
         }
 
         void IBaseRepository<T>.Update(T entity)
         {
-            entity.DateUpdated = DateTimeOffset.UtcNow;
+            entity.DeletedAt = new DateTimeOffset(DateTime.UtcNow);
             Context.Update(entity);
         }
 
         void IBaseRepository<T>.DeleteLogic(T entity)
         {
-            entity.DateDeleted = DateTimeOffset.UtcNow;
+            entity.DeletedAt = new DateTimeOffset(DateTime.UtcNow);
             entity.Deleted = true;
             Context.Update(entity);
         }

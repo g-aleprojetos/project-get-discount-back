@@ -43,8 +43,8 @@ namespace project_get_discount_back.Queries
 
                 if (res)
                 {
-                    _userRepository.Create(newUser);
-                    await _unitOfWork.Commit(cancellationToken);
+                    //_userRepository.Create(newUser);
+                    //await _unitOfWork.Commit(cancellationToken);
                     return new Success();
                 }
                 else
