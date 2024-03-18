@@ -26,7 +26,7 @@ namespace project_get_discount_back.Queries
                 return validationResult;
             }
 
-            var user = await _userRepository.GetByEmail(request.email, cancellationToken);
+            var user = await _userRepository.GetByEmailPassword(request.email, cancellationToken);
 
             if (user == null)
             {
@@ -38,9 +38,9 @@ namespace project_get_discount_back.Queries
                 return new Fail<LoginViewModel>(ResultError.EmailDeleted);
             }
 
-            if (user.Password == null)
+            if (user.Password?.PasswordHash == null)
             {
-                return new Fail<LoginViewModel>(ResultError.DoesNotContainPassword);
+                return new Fail<LoginViewModel>(ResultError.NonExistentPassword);
             }
 
             var encryptedPassword = new Cryptography();

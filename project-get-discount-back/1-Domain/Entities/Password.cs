@@ -3,24 +3,28 @@ using project_get_discount_back.Helpers;
 
 namespace project_get_discount_back._1_Domain.Entities
 {
-    public class Password : BaseEntity
+    public class Password(string passwordHash) : BaseEntity
     {
-        public required string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = passwordHash;
         public Guid UserId { get; set; }
 
-
-        public Password(string password, string createdBy, Guid userId) : base()
+        public Password(string password, Guid userId) : this(Encrypting(password))
         {
-            PasswordHash = Encrypting(password);
-            CreatedBy = createdBy;
-            CreatedAt = new DateTimeOffset(DateTime.UtcNow);
             UserId = userId;
+            CreatedAt = new DateTimeOffset(DateTime.UtcNow);
         }
 
-        public string Encrypting(string valor)
+        public Password(string password, Guid userId, string createdBy) : this(Encrypting(password), userId)
+        {
+            CreatedBy = createdBy;
+            CreatedAt = new DateTimeOffset(DateTime.UtcNow);
+        }
+
+        private static string Encrypting(string valor)
         {
             var encryptedPassword = new Cryptography();
             return encryptedPassword.Encrypt(valor);
         }
     }
+
 }

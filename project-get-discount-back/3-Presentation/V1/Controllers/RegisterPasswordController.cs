@@ -1,50 +1,47 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using project_get_discount_back._1_Domain.Queries;
 using project_get_discount_back._2_Infrastructure.Schemas.Responses;
 using project_get_discount_back.Queries;
 using project_get_discount_back.Results;
-using static project_get_discount_back.Entities.User;
 
 namespace project_get_discount_back._3_Presentation.V1.Controllers
 {
     /// <summary>
-    /// Controller para criar usuário.
+    /// Controller para criar e atualizar a senha do usuário.
     /// </summary>
     [ApiController]
     [Route("[controller]")]
-     public class RegisterUserController : ControllerBase
+    public class RegisterPasswordController : ControllerBase
     {
         private readonly IMediator _mediator;
 
         /// <summary>
-        /// Construtor do RegisterUserController.
+        /// Construtor do RegisterPasswordController.
         /// </summary>
-        /// <param name="mediator">Mediator para enviar a query de registro de usuário.</param>
-        public RegisterUserController(IMediator mediator)
+        /// <param name="mediator">Mediator para enviar a query de registro de senha do usuario.</param>
+        public RegisterPasswordController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         /// <summary>
-        /// Cadastra usuário.
+        /// Cadastra senha do usuário.
         /// </summary>
-        /// <param name="name">O nome do usuário</param>
         /// <param name="email">O email do usuário.</param>
-        /// <param name="role">O tipo de acesso do usuário</param>
+        /// <param name="password">A senha do usuário</param>
         /// <param name="cancellationToken">O token de cancelamento de operação assíncrona.</param>
-        /// <returns>O resultado da operação de cadastro do usuário.</returns>
-        [HttpPost("/registerUser")]
-        [Authorize(Roles = nameof(AccessType.ADMIN))]
-        public async Task<ActionResult> Post(string name, string email, string role, CancellationToken cancellationToken)
+        /// <returns>O resultado da operação de cadastro da senha do usuário.</returns>
+        [HttpPost("/registerPassword")]
+        public async Task<ActionResult> Post(string email, string password, CancellationToken cancellationToken)
         {
-            var query = new RegisterUserQuery(name, email, role);
+            var query = new RegisterPasswordQuery(email, password);
             var result = await _mediator.Send(query, cancellationToken);
             if (result is Fail fail)
             {
                 return BadRequest(new ErrosResponse(fail.Code, fail.Message));
             }
-            return Ok(result);
+            return Ok();
         }
     }
 }

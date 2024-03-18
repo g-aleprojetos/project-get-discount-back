@@ -3,7 +3,7 @@ using project_get_discount_back._1_Domain.Interfaces;
 using project_get_discount_back.Entities;
 using project_get_discount_back.Interfaces;
 using project_get_discount_back.Results;
-using System.Data;
+using static project_get_discount_back._1_Domain.Helpers.Email;
 using static project_get_discount_back.Entities.User;
 
 namespace project_get_discount_back.Queries
@@ -33,18 +33,17 @@ namespace project_get_discount_back.Queries
             }
 
             var user = await _userRepository.GetByEmail(request.email, cancellationToken);
-            //var userCreate = _userService.ObterUsername();
-            var userCreate = "Alexandre dos Santos Gonçalves";
+            var userCreate = _userService.ObterUsername();
             if (user == null)
             {
                 AccessType role = (AccessType)Enum.Parse(typeof(AccessType), request.role);
                 var newUser = new User(request.name, request.email, role, userCreate);
-                var res = await _email.SendEmailAsync(newUser, "Cadastro de senha", "Tipo do Email");
 
-                if (res)
+                var result = await CreateUserAndSendEmail(newUser);
+                if (result)
                 {
-                    //_userRepository.Create(newUser);
-                    //await _unitOfWork.Commit(cancellationToken);
+                    _userRepository.Create(newUser);
+                    await _unitOfWork.Commit(cancellationToken);
                     return new Success();
                 }
                 else
@@ -56,10 +55,19 @@ namespace project_get_discount_back.Queries
             {
                 if (user.Deleted)
                 {
-                    user.ActivateUser(userCreate);
-                    _userRepository.Update(user);
-                    await _unitOfWork.Commit(cancellationToken);
-                    return new Success();
+                    var result = await CreateUserAndSendEmail(user);
+                    if (result)
+                    {
+                        user.ActivateUser(userCreate);
+                        _userRepository.Update(user);
+                        await _unitOfWork.Commit(cancellationToken);
+                        return new Success();
+
+                    }
+                    else
+                    {
+                        return new Fail(ResultError.ErrorWhenSendingEmail);
+                    }
                 }
                 else
                 {
@@ -88,5 +96,18 @@ namespace project_get_discount_back.Queries
 
             return null;
         }
+
+        private async Task<bool> CreateUserAndSendEmail(User newUser)
+        {
+            try
+            {
+                return await _email.SendEmailAsync(newUser, EmailType.CREATEUSER);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
     }
 }

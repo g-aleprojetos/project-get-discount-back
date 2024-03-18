@@ -27,6 +27,7 @@ namespace project_get_discount_back.Helpers
                 Subject = new ClaimsIdentity(new Claim[]
                 {
             new(ClaimTypes.Name, user.Name),
+            new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Role, user.Role.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddHours(8),
