@@ -9,6 +9,11 @@ namespace project_get_discount_back.Repositories
     {
         public async Task<User?> GetByEmail(string email, CancellationToken cancellationToken)
         {
+            return await Context.Users.FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+        }
+
+        public async Task<User?> GetByEmailPassword(string email, CancellationToken cancellationToken)
+        {
             return await Context.Users
                     .Include(u => u.Password)
                     .FirstOrDefaultAsync(x => x.Email == email && !x.Deleted && x.Password != null && !x.Password.Deleted, cancellationToken);

@@ -15,10 +15,12 @@ namespace project_get_discount_back._1_Domain.Helpers
     {
         private readonly IConfiguration _configuration = configuration;
 
-        async Task<bool> IEmail.SendEmailAsync(User user, string subject, string messageBody)
+        async Task<bool> IEmail.SendEmailAsync(User user, EmailType emailType)
         {
             try
             {
+                string subject = emailType == EmailType.CREATEUSER ? "Cadastro de usuário" : "Cadastro de senha";
+                string page = emailType == EmailType.CREATEUSER ? UserRegistrationPage(user) : PasswordRegistrationPage(user);
                 string host = _configuration.GetValue<string>("SMTP:Host") ?? "";
                 string hostIn = _configuration.GetValue<string>("SMTP:HostIn") ?? "";
                 string nameSistema = _configuration.GetValue<string>("SMTP:Name") ?? "";
@@ -36,7 +38,7 @@ namespace project_get_discount_back._1_Domain.Helpers
                 email.From.Add(new MailboxAddress(nameSistema, userName));
                 email.To.Add(new MailboxAddress("", user.Email));
                 email.Subject = subject;
-                email.Body = new TextPart(TextFormat.Html) { Text = PageEmail(user) };
+                email.Body = new TextPart(TextFormat.Html) { Text = page };
 
 
                 using (var client = new SmtpClient())
@@ -102,7 +104,7 @@ namespace project_get_discount_back._1_Domain.Helpers
             return $"{char.ToUpper(firstName[0])}{firstName[1..].ToLower()}";
         }
 
-        private static string PageEmail(User user)
+        private static string UserRegistrationPage(User user)
         {
             string imageUrl = "https://raw.githubusercontent.com/g-aleprojetos/project-get-discount-back/main/project-get-discount-back/1-Domain/Assets/logo.png";
             string Response = "<div style=\"font-family:Arial, sans-serif;width:100%;background-color:#f4f4f4;text-align:center;margin:10px;\">";
@@ -132,6 +134,34 @@ namespace project_get_discount_back._1_Domain.Helpers
             Response += "</footer>";
             Response += "</body>";
             return Response;
+        }
+
+        private static string PasswordRegistrationPage(User user)
+        {
+            string imageUrl = "https://raw.githubusercontent.com/g-aleprojetos/project-get-discount-back/main/project-get-discount-back/1-Domain/Assets/logo.png";
+            string Response = "<div style=\"font-family:Arial, sans-serif;width:100%;background-color:#f4f4f4;text-align:center;margin:10px;\">";
+            Response += "<header style=\"background-color:#333;padding:10px 0;width:100%;\">";
+            Response += $"<img src=\"{imageUrl}\" alt=\"Icone da empresa\" width=\"100\" height=\"100\" />";
+            Response += " </header>";
+            Response += "<h1>Cadastro de Senha</h1>";
+            Response += $"<h2>Olá {GetFirstName(user.Name)},</h2>";
+            Response += "<h3>Parabéns sua senha foi cadastrada com sucesso!</h3>";
+            Response += "<p style=\"margin-bottom: 20px;\">Clique no botão abaixo para logar:</p>";
+            Response += "<button style=\"background-color: #083CF5; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;\">";
+            Response += "<a href=\"www.google.com.br\" target=\"_blank\" style=\"text-decoration: none; color: #fff;\">Logar</a>";
+            Response += "</button>";
+            Response += "<p style=\"margin-top: 20px;\">Obrigado!</p>";
+            Response += "<footer style=\"background-color: #333; color: #fff; text-align: center;position: absolute; bottom: 0; width: 100%;\">";
+            Response += "<p>by g.aleprojetos</p>";
+            Response += "</footer>";
+            Response += "</body>";
+            return Response;
+        }
+
+        public enum EmailType
+        {
+            CREATEUSER,
+            CREATERPASSWORD
         }
     }
 }

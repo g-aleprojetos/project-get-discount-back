@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using project_get_discount_back._1_Domain.Helpers;
@@ -37,29 +36,53 @@ namespace project_get_discount_back._1_Domain.Config
         public static IServiceCollection ConfigSwagger(this IServiceCollection services) =>
             services.AddSwaggerGen(c =>
             {
-                 c.SwaggerDoc("v1", new OpenApiInfo
-                     {
-                        Title = "Project Get Discount Back",
-                        Version = "v1",
-                        Contact = new OpenApiContact
-                        {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Project Get Discount Back",
+                    Version = "v1",
+                    Contact = new OpenApiContact
+                    {
                         Name = "Alexandre",
                         Email = "g.aleprojetos@gmail.com"
-                        }
-                 });
+                    }
+                });
 
-                // Adicione o caminho do arquivo XML de documentação aqui
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] {}
+            }
+                });
             });
+
 
         public static IServiceCollection ConfigServices(this IServiceCollection services) =>
             services.AddScoped<TokenService>()
                     .AddScoped<IUserRepository, UserRepository>()
                     .AddScoped<IUserService, UserService>()
                     .AddScoped<IUnitOfWork, UnitOfWork>()
-                    .AddScoped<IEmail,Email>();
+                    .AddScoped<IEmail, Email>();
 
         public static IServiceCollection ConfigAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
